@@ -1,0 +1,34 @@
+# baseURL
+@baseURL = http://localhost:3000
+
+###
+# Find All Tasks
+GET {{ baseURL }}/task
+
+###
+# Find Task By Id
+GET {{ baseURL }}/task/1
+
+###
+# Create Task
+POST {{ baseURL }}/task
+Content-Type: application/json
+
+{
+    "email": "example@email.com",
+    "password": "password"
+}
+
+###
+# Modify Task By Id
+PUT {{ baseURL }}/task/1
+Content-Type: application/json
+
+{
+    "email": "example@email.com",
+    "password": "password"
+}
+
+###
+# Delete Task By Id
+DELETE {{ baseURL }}/task/1

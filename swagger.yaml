@@ -1,0 +1,123 @@
+tags:
+- name: task
+  description: task APIs
+
+paths:
+  # [GET] tasks
+  /task:
+    get:
+      tags:
+      - task
+      summary: Find All tasks
+      responses:
+        200:
+          description: 'OK'
+        500:
+          description: 'Server Error'
+
+  # [POST] task
+    post:
+      tags:
+      - task
+      summary: Add task
+      parameters:
+      - name: body
+        in: body
+        description: task Data
+        required: true
+        schema:
+          $ref: '#/definitions/task'
+      responses:
+        201:
+          description: 'Created'
+        400:
+          description: 'Bad Request'
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
+  # [GET] task/id
+  /task/{id}:
+    get:
+      tags:
+      - task
+      summary: Find task By Id
+      parameters:
+      - name: id
+        in: path
+        description: Task Id
+        required: true
+      responses:
+        200:
+          description: 'OK'
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
+
+    # [PUT] task/id
+    put:
+      tags:
+      - task
+      summary: Update task By Id
+      parameters:
+      - name: id
+        in: path
+        description: task Id
+        required: true
+      - name: body
+        in: body
+        description: task Data
+        required: true
+        schema:
+          $ref: '#/definitions/Task'
+      responses:
+        200:
+          description: 'OK'
+        400:
+          description: 'Bad Request'
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
+
+    # [DELETE] task/id
+    delete:
+      tags:
+      - task
+      summary: Delete Task By Id
+      parameters:
+      - name: id
+        in: path
+        description: task Id
+        required: true
+      responses:
+        200:
+          description: 'OK'
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
+
+# definitions
+definitions:
+  task:
+    type: object
+    required:
+        - title
+        - description
+        - status
+    properties:
+      title:
+        type: string
+        description: title of the task
+      description:
+        type: string
+        description: description of the task
+      status:
+        type: string
+        description: status of the task
+
+schemes:
+ - https
+ - http
