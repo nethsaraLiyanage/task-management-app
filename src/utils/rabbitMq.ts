@@ -1,31 +1,22 @@
-// rabbitmq.ts
-import * as amqp from 'amqplib';
-import { RABBITMQ_URL } from '@config';
+import amqplib from 'amqplib';
 
-class RabbitMQ {
-  private static instance: RabbitMQ;
-  private connection: amqp.Connection;
-  private channel: amqp.Channel;
+const rabbitMQUrl = 'amqp://localhost'; // Replace with your actual RabbitMQ URL
+const queueName = 'task_queue';
 
-  private constructor() {}
+export async function publishToQueue(message: any): Promise<void> {
+  try {
+    const connection = await amqplib.connect(rabbitMQUrl);
+    const channel = await connection.createChannel();
 
-  public static async getInstance() {
-    if (!RabbitMQ.instance) {
-      RabbitMQ.instance = new RabbitMQ();
-      await RabbitMQ.instance.connect();
-    }
-    return RabbitMQ.instance;
-  }
+    await channel.assertQueue(queueName, { durable: true });
+    channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)), { persistent: true });
 
-  private async connect() {
-    this.connection = await amqp.connect(RABBITMQ_URL);
-    this.channel = await this.connection.createChannel();
-  }
+    console.log(" [x] Sent '%s'", message);
 
-  public async publish(queue: string, message: any) {
-    await this.channel.assertQueue(queue, { durable: true });
-    this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), { persistent: true });
+    setTimeout(() => {
+      connection.close();
+    }, 500);
+  } catch (error) {
+    console.error('Failed to connect to RabbitMQ', error);
   }
 }
-
-export default RabbitMQ;

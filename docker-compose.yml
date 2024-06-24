@@ -11,6 +11,7 @@ services:
     restart: 'unless-stopped'
     networks:
       - backend
+  
   server:
     build:
       context: ./
@@ -25,11 +26,10 @@ services:
     restart: 'unless-stopped'
     networks:
       - backend
-    links:
-      - mongo
     depends_on:
       - mongo
       - rabbitmq
+  
   mongo:
     image: mvertes/alpine-mongo
     container_name: mongo
@@ -37,11 +37,18 @@ services:
       - '27017:27017'
     networks:
       - backend
+  
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:management
+    container_name: rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - backend
 
 networks:
   backend:

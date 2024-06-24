@@ -3,7 +3,9 @@ import { Task } from '@interfaces/task.interface';
 import taskModel from '@models/task.model';
 import { isEmpty } from '@utils/util';
 import { CreateTaskDto } from '@/dtos/task.dto';
-import RabbitMQ from '@utils/rabbitMq';
+import { publishToQueue } from '@utils/rabbitMq';
+import { log } from 'console';
+import { logger } from '@/utils/logger';
 
 class TaskService {
   public tasks = taskModel;
@@ -26,9 +28,10 @@ class TaskService {
     if (isEmpty(taskData)) throw new HttpException(400, "taskData is empty");
     
     const createTaskData: Task = await this.tasks.create(taskData);
-
-    // const rabbitMQ = await RabbitMQ.getInstance();
-    // await rabbitMQ.publish('new-tasks', createTaskData);
+    
+    logger.debug("Creating task");
+    // Add data to the queue
+    await publishToQueue(createTaskData);
 
     return createTaskData;
   }
@@ -37,7 +40,12 @@ class TaskService {
     if (isEmpty(taskData)) throw new HttpException(400, "taskData is empty");
 
     const updateTaskById: Task = await this.tasks.findByIdAndUpdate(taskId, { taskData });
+    console.log("taskData : ", taskData);
+    
     if (!updateTaskById) throw new HttpException(409, "Task doesn't exist");
+
+    // Add data to the queue
+    // await publishToQueue("updated-tasks", updateTaskById);
 
     return updateTaskById;
   }
@@ -45,6 +53,9 @@ class TaskService {
   public async deleteTask(taskId: string): Promise<Task> {
     const deleteTaskById: Task = await this.tasks.findByIdAndDelete(taskId);
     if (!deleteTaskById) throw new HttpException(409, "task doesn't exist");
+    
+    // Add data to the queue
+    // await publishToQueue("deleted-tasks", deleteTaskById);
 
     return deleteTaskById;
   }

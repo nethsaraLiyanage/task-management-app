@@ -70,7 +70,7 @@ paths:
         description: task Data
         required: true
         schema:
-          $ref: '#/definitions/Task'
+          $ref: '#/definitions/task'
       responses:
         200:
           description: 'OK'
