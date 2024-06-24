@@ -13,6 +13,7 @@ import { dbConnection } from '@databases';
 import { Routes } from '@interfaces/routes.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
+import { consumeMessages  } from '@utils/rabbitMq';
 
 class App {
   public app: express.Application;
@@ -48,6 +49,7 @@ class App {
       console.error('Error closing database connection:', error);
     }
   }
+  consumeMessages(){}
 
   public getServer() {
     return this.app;

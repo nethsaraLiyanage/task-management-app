@@ -11,53 +11,75 @@ class TaskService {
   public tasks = taskModel;
 
   public async findAllTasks(): Promise<Task[]> {
-    const tasks: Task[] = await this.tasks.find();
-    return tasks;
+    try {
+      const tasks: Task[] = await this.tasks.find();
+      return tasks;
+    } catch (error) {
+      logger.error(`Error fetching all tasks: ${error.message}`);
+      throw new HttpException(500, 'Internal Server Error');
+    }
   }
 
   public async findTaskById(taskId: string): Promise<Task> {
-    if (isEmpty(taskId)) throw new HttpException(400, "TaskId is empty");
+    try {
+      if (isEmpty(taskId)) throw new HttpException(400, 'TaskId is empty');
 
-    const findTask: Task = await this.tasks.findOne({ _id: taskId });
-    if (!findTask) throw new HttpException(409, "task doesn't exist");
+      const findTask: Task = await this.tasks.findOne({ _id: taskId });
+      if (!findTask) throw new HttpException(409, "task doesn't exist");
 
-    return findTask;
+      return findTask;
+    } catch (error) {
+      logger.error(`Error fetching task by ID: ${error.message}`);
+      throw error instanceof HttpException ? error : new HttpException(500, 'Internal Server Error');
+    }
   }
 
   public async createTask(taskData: CreateTaskDto): Promise<Task> {
-    if (isEmpty(taskData)) throw new HttpException(400, "taskData is empty");
-    
-    const createTaskData: Task = await this.tasks.create(taskData);
-    
-    logger.debug("Creating task");
-    // Add data to the queue
-    await publishToQueue(createTaskData);
+    try {
+      if (isEmpty(taskData)) throw new HttpException(400, 'taskData is empty');
 
-    return createTaskData;
+      const createTaskData: Task = await this.tasks.create(taskData);
+      logger.debug('Creating task');
+      await publishToQueue(createTaskData);
+      console.log(createTaskData._id)
+
+      return createTaskData;
+    } catch (error) {
+      logger.error(`Error creating task: ${error.message}`);
+      throw new HttpException(500, 'Internal Server Error');
+    }
   }
 
   public async updateTask(taskId: string, taskData: CreateTaskDto): Promise<Task> {
-    if (isEmpty(taskData)) throw new HttpException(400, "taskData is empty");
+    try {
+      if (isEmpty(taskData)) throw new HttpException(400, 'taskData is empty');
 
-    const updateTaskById: Task = await this.tasks.findByIdAndUpdate(taskId, { taskData });
-    console.log("taskData : ", taskData);
-    
-    if (!updateTaskById) throw new HttpException(409, "Task doesn't exist");
+      const updateTaskById: Task = await this.tasks.findByIdAndUpdate(taskId, { taskData });
+      console.log('taskData : ', taskData);
 
-    // Add data to the queue
-    // await publishToQueue("updated-tasks", updateTaskById);
+      if (!updateTaskById) throw new HttpException(409, "Task doesn't exist");
 
-    return updateTaskById;
+      await publishToQueue(updateTaskById);
+
+      return updateTaskById;
+    } catch (error) {
+      logger.error(`Error updating task: ${error.message}`);
+      throw error instanceof HttpException ? error : new HttpException(500, 'Internal Server Error');
+    }
   }
 
   public async deleteTask(taskId: string): Promise<Task> {
-    const deleteTaskById: Task = await this.tasks.findByIdAndDelete(taskId);
-    if (!deleteTaskById) throw new HttpException(409, "task doesn't exist");
-    
-    // Add data to the queue
-    // await publishToQueue("deleted-tasks", deleteTaskById);
+    try {
+      const deleteTaskById: Task = await this.tasks.findByIdAndDelete(taskId);
+      if (!deleteTaskById) throw new HttpException(409, "task doesn't exist");
 
-    return deleteTaskById;
+      await publishToQueue(deleteTaskById);
+
+      return deleteTaskById;
+    } catch (error) {
+      logger.error(`Error deleting task: ${error.message}`);
+      throw error instanceof HttpException ? error : new HttpException(500, 'Internal Server Error');
+    }
   }
 }
 
