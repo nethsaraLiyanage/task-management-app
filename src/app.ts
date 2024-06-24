@@ -49,7 +49,7 @@ class App {
       console.error('Error closing database connection:', error);
     }
   }
-  consumeMessages(){}
+  // consumeMessages(){}
 
   public getServer() {
     return this.app;
