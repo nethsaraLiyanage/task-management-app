@@ -1,7 +1,7 @@
 import amqplib from 'amqplib';
 import { logger } from './logger';
 
-const rabbitMQUrl = 'amqps://tkjtysey:4TdwDSrMv9AMuTlJ2-d5V0gwLQLMNLZO@moose.rmq.cloudamqp.com/tkjtysey';
+const rabbitMQUrl = 'amqps://waqqhxuy:MTOaPWXd5UL0g2jqi9nBtRl5RY-m_B_U@moose.rmq.cloudamqp.com/waqqhxuy';
 const queueName = 'task_queue';
 
 export async function publishToQueue(message: any): Promise<void> {
