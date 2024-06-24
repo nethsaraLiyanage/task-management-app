@@ -26,6 +26,7 @@ class App {
     this.port = PORT || 3000;
 
     this.connectToDatabase();
+    this.connectToConsume();
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
     this.initializeSwagger();
@@ -49,7 +50,12 @@ class App {
       console.error('Error closing database connection:', error);
     }
   }
-  // consumeMessages(){}
+  
+
+  //consuming rabbit messages
+  public connectToConsume (){
+    consumeMessages();
+  }
 
   public getServer() {
     return this.app;
