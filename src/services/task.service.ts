@@ -4,8 +4,8 @@ import taskModel from '@models/task.model';
 import { isEmpty } from '@utils/util';
 import { CreateTaskDto } from '@/dtos/task.dto';
 import { publishToQueue } from '@utils/rabbitMq';
-import { log } from 'console';
 import { logger } from '@/utils/logger';
+import MessageFormatter from '@/utils/messageFormatter';
 
 class TaskService {
   public tasks = taskModel;
@@ -39,9 +39,9 @@ class TaskService {
       if (isEmpty(taskData)) throw new HttpException(400, 'taskData is empty');
 
       const createTaskData: Task = await this.tasks.create(taskData);
-      logger.debug('Creating task');
-      await publishToQueue(createTaskData);
-      console.log(createTaskData._id)
+
+      const formattedTaskData = MessageFormatter.format(createTaskData, "Task Created");
+      await publishToQueue(formattedTaskData);
 
       return createTaskData;
     } catch (error) {
@@ -59,7 +59,8 @@ class TaskService {
 
       if (!updateTaskById) throw new HttpException(409, "Task doesn't exist");
 
-      await publishToQueue(updateTaskById);
+      const formattedTaskData = MessageFormatter.format(updateTaskById, "Task Updated");
+      await publishToQueue(formattedTaskData);
 
       return updateTaskById;
     } catch (error) {
@@ -73,7 +74,8 @@ class TaskService {
       const deleteTaskById: Task = await this.tasks.findByIdAndDelete(taskId);
       if (!deleteTaskById) throw new HttpException(409, "task doesn't exist");
 
-      await publishToQueue(deleteTaskById);
+      const formattedTaskData = MessageFormatter.format(deleteTaskById, "Task Deleted");
+      await publishToQueue(formattedTaskData);
 
       return deleteTaskById;
     } catch (error) {

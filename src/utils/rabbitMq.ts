@@ -1,8 +1,9 @@
 import amqplib from 'amqplib';
 import { logger } from './logger';
+import { RABBITMQ_URL,QUEUE_NAME } from '@config';
 
-const rabbitMQUrl = 'amqps://waqqhxuy:MTOaPWXd5UL0g2jqi9nBtRl5RY-m_B_U@moose.rmq.cloudamqp.com/waqqhxuy';
-const queueName = 'task_queue';
+const rabbitMQUrl = RABBITMQ_URL;
+const queueName = QUEUE_NAME;
 
 export async function publishToQueue(message: any): Promise<void> {
   try {
@@ -27,7 +28,7 @@ export async function consumeMessages(): Promise<void> {
     const connection = await amqplib.connect(rabbitMQUrl);
     const channel = await connection.createChannel();
 
-    await channel.assertQueue({ durable: true });
+    await channel.assertQueue(queueName, { durable: true });
     console.log(` [*] Waiting for messages in ${queueName}. To exit press CTRL+C`);
 
     channel.consume(queueName, (msg) => {
@@ -36,6 +37,7 @@ export async function consumeMessages(): Promise<void> {
         console.log(" [x] Received '%s'", messageContent);
 
         // Log the consumed message using the logger
+        console.log(`Consumed message from ${queueName}: ${messageContent}`);
         logger.info(`Consumed message from ${queueName}: ${messageContent}`);
 
         channel.ack(msg);
