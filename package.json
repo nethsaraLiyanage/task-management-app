@@ -9,7 +9,7 @@
     "typescript-express-mongoose-starter": "./bin/cli.js"
   },
   "scripts": {
-    "start": "cross-env NODE_ENV=production node dist/server.js",
+    "start": "cross-env NODE_ENV=develpment node dist/server.js",
     "dev": "cross-env NODE_ENV=development nodemon",
     "build": "swc src -d dist --source-maps --copy-files",
     "build:tsc": "tsc && tsc-alias",
