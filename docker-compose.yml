@@ -29,7 +29,7 @@ services:
     depends_on:
       - mongo
       - rabbitmq
-  
+   
   mongo:
     image: mvertes/alpine-mongo
     container_name: mongo
