@@ -12,8 +12,17 @@ On Local device :
     - for this we are using the MongoDB Atlas and the Heroku Deployed RabbitMQ instance.
     - run the command `npm run dev`
 
+=======================================================================================================================================
+
+## Heroku URL
+ - APP_URL = https://task-management-app-ses-1c5db74458ed.herokuapp.com/
+ - SWAGGER_URL = https://task-management-app-ses-1c5db74458ed.herokuapp.com/api-docs/
+
+- **NOTES** - Heroku doesn't support DOCKER COMPOSE with RabbitMQ and MongoDB. So I used MongoDB cloud for the heroku deployment and RabbitMQ Add-on called "CloudAMQP" for the deployment. 
 
 
+
+=======================================================================================================================================
 
 ## Configurations
 
